@@ -1,32 +1,39 @@
 import beads.*;
 import org.jaudiolibs.beads.*;
-
-//to use text to speech functionality, copy text_to_speech.pde from this sketch to yours
-//example usage below
-
-//IMPORTANT (notice from text_to_speech.pde):
-//to use this you must import 'ttslib' into Processing, as this code uses the included FreeTTS library
-//e.g. from the Menu Bar select Sketch -> Import Library... -> ttslib
+import controlP5.*;
 
 TextToSpeechMaker ttsMaker; 
 
-//<import statements here>
+ControlP5 p5;
 
-//to use this, copy notification.pde, notification_listener.pde and notification_server.pde from this sketch to yours.
-//Example usage below.
+Button train;
+Button jogging;
+Button party;
+Button lecture;
+Button status;
+Button eventStream1;
+Button eventStream2;
+Button eventStream3;
+//radios for battery status
+//radios network connection
+
+
 
 //name of a file to load from the data directory
 String eventDataJSON1 = "ExampleData_1.json";
 String eventDataJSON2 = "ExampleData_2.json";
+String eventDataJSON3 = "ExampleData_3.json";
 
 NotificationServer server;
 ArrayList<Notification> notifications;
 
-Example example;
+Homework hw;
 
 void setup() {
+  size(300, 600);
   ac = new AudioContext(); //ac is defined in helper_functions.pde
   ac.start();
+  p5 = new ControlP5(this);
   
   //this will create WAV files in your data directory from input speech 
   //which you will then need to hook up to SamplePlayer Beads
@@ -40,18 +47,61 @@ void setup() {
   server = new NotificationServer();
   
   //instantiating a custom class (seen below) and registering it as a listener to the server
-  example = new Example();
-  server.addListener(example);
-  
-  //loading the event stream, which also starts the timer serving events
-  server.loadEventStream(eventDataJSON1);
+  hw = new Homework();
+  server.addListener(hw);
   
   //END NotificationServer setup
   
+  
+  
+  //START BUTTONS SETUP
+  train = p5.addButton("train")
+    .setPosition(100, 50)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Train");
+    
+   jogging = p5.addButton("jogging")
+    .setPosition(150, 50)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Jogging");
+    
+   party = p5.addButton("party")
+    .setPosition(100, 80)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Party");
+    
+   lecture = p5.addButton("lecture")
+    .setPosition(150, 80)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Lecture");
+
+   eventStream1 = p5.addButton("eStream1")
+    .setPosition(75, 500)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Stream 1");  
+
+   eventStream2 = p5.addButton("eStream2")
+    .setPosition(125, 500)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Stream 2");  
+    
+   eventStream3 = p5.addButton("eStream3")
+    .setPosition(175, 500)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Stream 3");    
 }
 
 void draw() {
-  //this method must be present (even if empty) to process events such as keyPressed()  
+  background(256);
+  text("Select a contex:", 100, 45);
+  text("Select an event stream:",80, 495);
 }
 
 void keyPressed() {
@@ -66,9 +116,9 @@ void keyPressed() {
 
 //in your own custom class, you will implement the NotificationListener interface 
 //(with the notificationReceived() method) to receive Notification events as they come in
-class Example implements NotificationListener {
+class Homework implements NotificationListener {
   
-  public Example() {
+  public Homework() {
     //setup here
   }
   
@@ -124,4 +174,40 @@ void ttsExamplePlayback(String inputSpeech) {
   sp.setToLoopStart();
   sp.start();
   println("TTS: " + inputSpeech);
+}
+
+void train() {
+  
+}
+
+void jogging() {
+  
+}
+
+void party() {
+  
+}
+
+void lecture() {
+  
+}
+
+void eStream1() {
+  //loading the event stream, which also starts the timer serving events
+  server.stopEventStream();
+  server.loadEventStream(eventDataJSON1);
+  println("**** New event stream loaded: " + eventDataJSON1 + " ****");
+  
+}
+
+void eStream2() {
+  server.stopEventStream();
+  server.loadEventStream(eventDataJSON2);
+  println("**** New event stream loaded: " + eventDataJSON2 + " ****");  
+}
+
+void eStream3() {
+  server.stopEventStream();
+  server.loadEventStream(eventDataJSON3);
+  println("**** New event stream loaded: " + eventDataJSON3 + " ****");  
 }
