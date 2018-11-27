@@ -39,9 +39,9 @@ void setup() {
   //which you will then need to hook up to SamplePlayer Beads
   ttsMaker = new TextToSpeechMaker();
   
-  String exampleSpeech = "Text to speech is okay, I guess.";
+  String exampleSpeech0 = "JOGGING";
   
-  ttsExamplePlayback(exampleSpeech); //see ttsExamplePlayback below for usage
+  ttsExamplePlayback(exampleSpeech0); //see ttsExamplePlayback below for usage
   
   //START NotificationServer setup
   server = new NotificationServer();
@@ -159,7 +159,7 @@ void ttsExamplePlayback(String inputSpeech) {
   //the SamplePlayer will remove itself when it is finished in this case
   
   String ttsFilePath = ttsMaker.createTTSWavFile(inputSpeech);
-  println("File created at " + ttsFilePath);
+  println("File createdi at " + ttsFilePath);
   
   //createTTSWavFile makes a new WAV file of name ttsX.wav, where X is a unique integer
   //it returns the path relative to the sketch's data directory to the wav file
@@ -177,19 +177,23 @@ void ttsExamplePlayback(String inputSpeech) {
 }
 
 void train() {
-  
+
+  println("**** New context: TRAIN ****");   
 }
 
 void jogging() {
-  
+
+  println("**** New context: JOGGING ****");  
 }
 
 void party() {
-  
+ 
+  println("**** New context: PARTY ****");    
 }
 
 void lecture() {
   
+  println("**** New context: LECTURE ****");    
 }
 
 void eStream1() {
