@@ -17,7 +17,12 @@ Button eventStream3;
 //radios for battery status
 //radios network connection
 
+SamplePlayer trainLoop;
+SamplePlayer joggingLoop;
+SamplePlayer partyLoop;
+SamplePlayer lectureLoop;
 
+BiquadFilter filter;
 
 //name of a file to load from the data directory
 String eventDataJSON1 = "ExampleData_1.json";
@@ -32,8 +37,22 @@ Homework hw;
 void setup() {
   size(300, 600);
   ac = new AudioContext(); //ac is defined in helper_functions.pde
-  ac.start();
+  //ac.start();
   p5 = new ControlP5(this);
+  
+  trainLoop = getSamplePlayer("intermission.wav");
+  trainLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
+  
+  joggingLoop = getSamplePlayer("voice1.wav");
+  joggingLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
+  
+  partyLoop = getSamplePlayer("voice2.wav");
+  partyLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
+  
+  lectureLoop = getSamplePlayer("intermission.wav");
+  lectureLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
+  
+  
   
   //this will create WAV files in your data directory from input speech 
   //which you will then need to hook up to SamplePlayer Beads
@@ -177,18 +196,24 @@ void ttsExamplePlayback(String inputSpeech) {
 }
 
 void train() {
-
-  println("**** New context: TRAIN ****");   
+  println("**** New context: TRAIN ****");
+  ac.stop();
+  ac.out.addInput(trainLoop);
+  ac.start();
 }
 
 void jogging() {
-
-  println("**** New context: JOGGING ****");  
+  println("**** New context: JOGGING ****");
+  ac.stop();
+  //ac.out.addInput(joggingLoop);
+  //ac.start();
 }
 
 void party() {
- 
-  println("**** New context: PARTY ****");    
+  println("**** New context: PARTY ****");
+  ac.stop();
+  ac.out.addInput(partyLoop);
+  ac.start();
 }
 
 void lecture() {
