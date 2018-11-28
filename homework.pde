@@ -5,6 +5,7 @@ import controlP5.*;
 TextToSpeechMaker ttsMaker; 
 
 ControlP5 p5;
+Gain gain;
 
 Button train;
 Button jogging;
@@ -16,6 +17,19 @@ Button eventStream2;
 Button eventStream3;
 //radios for battery status
 //radios network connection
+
+Toggle tweetTog;
+Toggle callTog;
+Toggle emailTog;
+Toggle voicemailTog;
+Toggle textTog;
+
+boolean tweetTogVal = false;
+boolean callTogVal = false;
+boolean emailTogVal = false;
+boolean voicemailTogVal = false;
+boolean textTogVal = false;
+
 
 SamplePlayer trainLoop;
 SamplePlayer joggingLoop;
@@ -41,15 +55,23 @@ void setup() {
   p5 = new ControlP5(this);
   
   trainLoop = getSamplePlayer("intermission.wav");
+  trainLoop.pause(true);
+  trainLoop.setToLoopStart();
   trainLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
   joggingLoop = getSamplePlayer("voice1.wav");
+  joggingLoop.pause(true);
+  joggingLoop.setToLoopStart();
   joggingLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
   partyLoop = getSamplePlayer("voice2.wav");
+  partyLoop.pause(true);
+  partyLoop.setToLoopStart();
   partyLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
   lectureLoop = getSamplePlayer("intermission.wav");
+  lectureLoop.pause(true);
+  lectureLoop.setToLoopStart();
   lectureLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
   
@@ -71,33 +93,39 @@ void setup() {
   
   //END NotificationServer setup
   
+  gain = new Gain(ac, 1);
+  gain.addInput(trainLoop);
+  gain.addInput(joggingLoop);
+  gain.addInput(partyLoop);
+  gain.addInput(lectureLoop);  
+  //BUTTONS SETUP
   
-  
-  //START BUTTONS SETUP
+  //contexts
   train = p5.addButton("train")
-    .setPosition(100, 50)
+    .setPosition(95, 30)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
     .setLabel("Train");
     
    jogging = p5.addButton("jogging")
-    .setPosition(150, 50)
+    .setPosition(155, 30)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
     .setLabel("Jogging");
     
    party = p5.addButton("party")
-    .setPosition(100, 80)
+    .setPosition(95, 65)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
     .setLabel("Party");
     
    lecture = p5.addButton("lecture")
-    .setPosition(150, 80)
+    .setPosition(155, 65)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
     .setLabel("Lecture");
 
+  //event streams
    eventStream1 = p5.addButton("eStream1")
     .setPosition(75, 500)
     .setSize(50, 30)
@@ -114,13 +142,45 @@ void setup() {
     .setPosition(175, 500)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
-    .setLabel("Stream 3");    
+    .setLabel("Stream 3");  
+    
+   //notifications 
+   tweetTog = p5.addToggle("tweetToggle")
+     .setPosition(95, 142.5)
+     .setSize(50, 30)
+     .setLabel("Tweets");
+     
+   callTog = p5.addToggle("callToggle")
+     .setPosition(150, 142.5)
+     .setSize(50, 30)
+     .setLabel("Missed Call");
+     
+   emailTog = p5.addToggle("emailToggle")
+     .setPosition(95, 187.5)
+     .setSize(50, 30)
+     .setLabel("Email");
+     
+   voicemailTog = p5.addToggle("voicemailToggle")
+     .setPosition(150, 187.5)
+     .setSize(50, 30)
+     .setLabel("Voicemail");
+     
+   textTog = p5.addToggle("textToggle")
+     .setPosition(122.5, 232.5)
+     .setSize(50, 30)
+     .setLabel("Texts");
+     
+     ac.out.addInput(gain);
+     ac.start();
 }
 
 void draw() {
   background(256);
-  text("Select a contex:", 100, 45);
+  text("Select a contex:", 105, 22.5);
+  text("Toggle Notifications:", 90, 135);
   text("Select an event stream:",80, 495);
+
+
 }
 
 void keyPressed() {
@@ -195,30 +255,78 @@ void ttsExamplePlayback(String inputSpeech) {
   println("TTS: " + inputSpeech);
 }
 
+
+public void play(SamplePlayer sp){
+  sp.setToLoopStart();
+  sp.start();
+}
+
 void train() {
   println("**** New context: TRAIN ****");
-  ac.stop();
-  ac.out.addInput(trainLoop);
-  ac.start();
+  joggingLoop.pause(true);
+  partyLoop.pause(true);
+  lectureLoop.pause(true);
+  play(trainLoop);
+  
 }
 
 void jogging() {
   println("**** New context: JOGGING ****");
-  ac.stop();
-  //ac.out.addInput(joggingLoop);
-  //ac.start();
+  trainLoop.pause(true);
+  joggingLoop.pause(true);
+  partyLoop.pause(true);
+  play(joggingLoop);
 }
 
 void party() {
   println("**** New context: PARTY ****");
-  ac.stop();
-  ac.out.addInput(partyLoop);
-  ac.start();
+  trainLoop.pause(true);
+  joggingLoop.pause(true);
+  lectureLoop.pause(true);
+  partyLoop.start();
 }
 
 void lecture() {
-  
-  println("**** New context: LECTURE ****");    
+  println("**** New context: LECTURE ****"); 
+  trainLoop.pause(true);
+  joggingLoop.pause(true);
+  partyLoop.pause(true);
+  lectureLoop.start();
+}
+
+void tweetToggle() {
+  if(!tweetTogVal)
+    tweetTogVal = true;
+  else
+    tweetTogVal = false;
+}
+
+void callToggle() {
+  if(!callTogVal)
+    callTogVal = true;
+  else
+    callTogVal = false;     
+}
+
+void emailToggle() {
+  if(!emailTogVal)
+    emailTogVal = true;
+  else
+    emailTogVal = false;     
+}
+
+void voicemailToggle() {
+  if(!voicemailTogVal)
+    voicemailTogVal = true;
+  else
+    voicemailTogVal = false;     
+}
+
+void textToggle() {
+  if(!textTogVal)
+    textTogVal = true;
+  else
+    textTogVal = false;     
 }
 
 void eStream1() {
