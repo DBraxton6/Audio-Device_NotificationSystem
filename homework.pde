@@ -65,7 +65,7 @@ void setup() {
   trainLoop.setToLoopStart();
   trainLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
-  joggingLoop = getSamplePlayer("voice1.wav");
+  joggingLoop = getSamplePlayer("city.wav");
   joggingLoop.pause(true);
   joggingLoop.setToLoopStart();
   joggingLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
