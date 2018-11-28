@@ -35,6 +35,11 @@ SamplePlayer trainLoop;
 SamplePlayer joggingLoop;
 SamplePlayer partyLoop;
 SamplePlayer lectureLoop;
+SamplePlayer tweet;
+SamplePlayer text;
+SamplePlayer email;
+SamplePlayer voicemail;
+SamplePlayer call;
 
 BiquadFilter filter;
 
@@ -54,6 +59,7 @@ void setup() {
   //ac.start();
   p5 = new ControlP5(this);
   
+  //context sounds
   trainLoop = getSamplePlayer("intermission.wav");
   trainLoop.pause(true);
   trainLoop.setToLoopStart();
@@ -69,10 +75,32 @@ void setup() {
   partyLoop.setToLoopStart();
   partyLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
-  lectureLoop = getSamplePlayer("intermission.wav");
+  lectureLoop = getSamplePlayer("music.wav");
   lectureLoop.pause(true);
   lectureLoop.setToLoopStart();
   lectureLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
+  
+  
+  //notification sounds
+  tweet = getSamplePlayer("gameJump.wav");
+  tweet.pause(true);
+  tweet.setToLoopStart();
+
+  text = getSamplePlayer("marioCoin.wav");
+  text.pause(true);
+  text.setToLoopStart();
+  
+  call = getSamplePlayer("marioSlide.wav");
+  call.pause(true);
+  call.setToLoopStart();
+  
+  email = getSamplePlayer("powerUp.wav");
+  email.pause(true);
+  email.setToLoopStart();
+  
+  voicemail = getSamplePlayer("intermediate1.wav");
+  voicemail.pause(true);
+  voicemail.setToLoopStart(); 
   
   
   
@@ -97,7 +125,12 @@ void setup() {
   gain.addInput(trainLoop);
   gain.addInput(joggingLoop);
   gain.addInput(partyLoop);
-  gain.addInput(lectureLoop);  
+  gain.addInput(lectureLoop); 
+  gain.addInput(tweet); 
+  gain.addInput(text); 
+  gain.addInput(email); 
+  gain.addInput(call); 
+  gain.addInput(voicemail); 
   //BUTTONS SETUP
   
   //contexts
@@ -210,18 +243,23 @@ class Homework implements NotificationListener {
     switch (notification.getType()) {
       case Tweet:
         debugOutput += "New tweet from ";
+        tweetHandler();
         break;
       case Email:
         debugOutput += "New email from ";
+        emailHandler();
         break;
       case VoiceMail:
         debugOutput += "New voicemail from ";
+        voicemailHandler();
         break;
       case MissedCall:
         debugOutput += "Missed call from ";
+        callHandler();
         break;
       case TextMessage:
         debugOutput += "New message from ";
+        textHandler();
         break;
     }
     debugOutput += notification.getSender() + ", " + notification.getMessage();
@@ -327,6 +365,51 @@ void textToggle() {
     textTogVal = true;
   else
     textTogVal = false;     
+}
+
+void textHandler() {
+  if(textTogVal == false) {
+    text.pause(true);
+  } 
+  else {
+    play(text);
+  }
+}
+
+void tweetHandler() {
+  if(tweetTogVal == false) {
+    tweet.pause(true);  
+  } 
+  else {
+    play(tweet);
+  }
+}
+
+void emailHandler() {
+  if(emailTogVal == false) {
+    email.pause(true);  
+  } 
+  else {
+    play(email);
+  }
+}
+
+void callHandler() {
+  if(callTogVal == false) {
+    call.pause(true);  
+  } 
+  else {
+    play(call);
+  }
+}
+
+void voicemailHandler() {
+  if(voicemailTogVal == false) {
+    voicemail.pause(true);
+  } 
+  else {
+    play(voicemail);
+  }
 }
 
 void eStream1() {
