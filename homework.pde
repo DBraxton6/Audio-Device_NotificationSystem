@@ -25,11 +25,20 @@ Toggle emailTog;
 Toggle voicemailTog;
 Toggle textTog;
 
+boolean trainVal = false;
+boolean joggingVal = false;
+boolean partyVal = false;
+boolean lectureVal = false;
 boolean tweetTogVal = false;
 boolean callTogVal = false;
 boolean emailTogVal = false;
 boolean voicemailTogVal = false;
 boolean textTogVal = false;
+boolean eStream1Val = false;
+boolean eStream2Val = false;
+boolean eStream3Val = false;
+
+
 
 
 SamplePlayer trainLoop;
@@ -43,6 +52,7 @@ SamplePlayer voicemail;
 SamplePlayer call;
 SamplePlayer noStat;
 SamplePlayer workingStat;
+SamplePlayer dyingStat;
 SamplePlayer lowStat;
 SamplePlayer medStat;
 SamplePlayer highStat;
@@ -60,7 +70,7 @@ ArrayList<Notification> notifications;
 Homework hw;
 
 void setup() {
-  size(300, 600);
+  size(300, 530);
   ac = new AudioContext(); //ac is defined in helper_functions.pde
   //ac.start();
   p5 = new ControlP5(this);
@@ -88,35 +98,58 @@ void setup() {
   
   
   //notification sounds
-  tweet = getSamplePlayer("gameJump.wav");
+  tweet = getSamplePlayer("tweet.wav");
   tweet.pause(true);
   tweet.setToLoopStart();
 
-  text = getSamplePlayer("marioCoin.wav");
+  text = getSamplePlayer("positive_or_intermediate.mp3");
   text.pause(true);
   text.setToLoopStart();
   
-  call = getSamplePlayer("marioSlide.wav");
+  call = getSamplePlayer("missedCall.wav");
   call.pause(true);
   call.setToLoopStart();
   
-  email = getSamplePlayer("powerUp.wav");
+  email = getSamplePlayer("email.wav");
   email.pause(true);
   email.setToLoopStart();
   
-  voicemail = getSamplePlayer("intermediate1.wav");
+  voicemail = getSamplePlayer("voicemail.mp3");
   voicemail.pause(true);
   voicemail.setToLoopStart(); 
   
+  //status sounds
+  noStat = getSamplePlayer("intermediate2.wav");
+  noStat.pause(true);
+  noStat.setToLoopStart();
+
+  workingStat = getSamplePlayer("positive3.wav");
+  workingStat.pause(true);
+  workingStat.setToLoopStart();
+
+  dyingStat = getSamplePlayer("negative2.wav");
+  dyingStat.pause(true);
+  dyingStat.setToLoopStart();  
   
+  lowStat = getSamplePlayer("intermediate1.wav");
+  lowStat.pause(true);
+  lowStat.setToLoopStart();
+  
+  medStat = getSamplePlayer("positive1.wav");
+  medStat.pause(true);
+  medStat.setToLoopStart();
+  
+  highStat = getSamplePlayer("positive2.wav");
+  highStat.pause(true);
+  highStat.setToLoopStart();  
   
   //this will create WAV files in your data directory from input speech 
   //which you will then need to hook up to SamplePlayer Beads
   ttsMaker = new TextToSpeechMaker();
+
   
-  String exampleSpeech0 = "JOGGING";
+  //String exampleSpeech0 = "JOGGING";
   
-  ttsExamplePlayback(exampleSpeech0); //see ttsExamplePlayback below for usage
   
   //START NotificationServer setup
   server = new NotificationServer();
@@ -136,7 +169,14 @@ void setup() {
   gain.addInput(text); 
   gain.addInput(email); 
   gain.addInput(call); 
-  gain.addInput(voicemail); 
+  gain.addInput(voicemail);
+  gain.addInput(noStat); 
+  gain.addInput(workingStat); 
+  gain.addInput(dyingStat); 
+  gain.addInput(lowStat); 
+  gain.addInput(medStat); 
+  gain.addInput(highStat); 
+  
   //BUTTONS SETUP
   
   //contexts
@@ -166,22 +206,28 @@ void setup() {
 
   //event streams
    eventStream1 = p5.addButton("eStream1")
-    .setPosition(75, 500)
+    .setPosition(75, 485)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
     .setLabel("Stream 1");  
 
    eventStream2 = p5.addButton("eStream2")
-    .setPosition(125, 500)
+    .setPosition(125, 485)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
     .setLabel("Stream 2");  
     
    eventStream3 = p5.addButton("eStream3")
-    .setPosition(175, 500)
+    .setPosition(175, 485)
     .setSize(50, 30)
     .activateBy((ControlP5.RELEASE))
-    .setLabel("Stream 3");  
+    .setLabel("Stream 3");
+    
+   status = p5.addButton("workingStatus")
+    .setPosition(122.5, 415)
+    .setSize(50, 30)
+    .activateBy((ControlP5.RELEASE))
+    .setLabel("Status");    
     
    //notifications 
    tweetTog = p5.addToggle("tweetToggle")
@@ -238,18 +284,13 @@ void draw() {
   text("Toggle Notifications:", 90, 135);
   text("Batter Status:", 110, 317.5);
   text("Network Status:", 110, 367.5);
-  text("Select an event stream:",80, 495);
+  text("Select an event stream:",80, 477.5);
 
 
 }
 
 void keyPressed() {
-  //example of stopping the current event stream and loading the second one
-  if (key == RETURN || key == ENTER) {
-    server.stopEventStream(); //always call this before loading a new stream
-    server.loadEventStream(eventDataJSON2);
-    println("**** New event stream loaded: " + eventDataJSON2 + " ****");
-  }
+  //example of stopping the current event stream and loading the second on
     
 }
 
@@ -290,7 +331,7 @@ class Homework implements NotificationListener {
         break;
     }
     debugOutput += notification.getSender() + ", " + notification.getMessage();
-    
+    ttsExamplePlayback(debugOutput); //see ttsExamplePlayback below for usage    
     println(debugOutput);
     
    //You can experiment with the timing by altering the timestamp values (in ms) in the exampleData.json file
@@ -316,8 +357,9 @@ void ttsExamplePlayback(String inputSpeech) {
   
   ac.out.addInput(sp);
   sp.setToLoopStart();
+  //sp.pause(true);
   sp.start();
-  println("TTS: " + inputSpeech);
+  //println("TTS: " + inputSpeech);
 }
 
 
@@ -328,6 +370,10 @@ public void play(SamplePlayer sp){
 
 void train() {
   println("**** New context: TRAIN ****");
+  trainVal = true;
+  joggingVal = false;
+  partyVal = false;
+  lectureVal = false;
   joggingLoop.pause(true);
   partyLoop.pause(true);
   lectureLoop.pause(true);
@@ -337,6 +383,10 @@ void train() {
 
 void jogging() {
   println("**** New context: JOGGING ****");
+  trainVal = false;
+  joggingVal = true;
+  partyVal = false;
+  lectureVal = false;
   trainLoop.pause(true);
   joggingLoop.pause(true);
   partyLoop.pause(true);
@@ -345,6 +395,10 @@ void jogging() {
 
 void party() {
   println("**** New context: PARTY ****");
+  trainVal = false;
+  joggingVal = false;
+  partyVal = true;
+  lectureVal = false;  
   trainLoop.pause(true);
   joggingLoop.pause(true);
   lectureLoop.pause(true);
@@ -353,10 +407,43 @@ void party() {
 
 void lecture() {
   println("**** New context: LECTURE ****"); 
+  trainVal = false;
+  joggingVal = false;
+  partyVal = false;
+  lectureVal = true;  
   trainLoop.pause(true);
   joggingLoop.pause(true);
   partyLoop.pause(true);
   lectureLoop.start();
+}
+
+void batteryStatus(int x) {
+  if (x == 1 && joggingVal == true)
+    ttsExamplePlayback("Battery Level Critical"); //see ttsExamplePlayback below for usage
+  else if(x == 1)
+    play(lowStat);
+  else if (x == 2)
+    play(lowStat);
+  else if (x == 3)
+    play(medStat);
+  else
+    play(highStat);
+}
+
+void networkStatus(int x) {
+  if(x == 1)
+    play(lowStat);
+  else if (x == 2)
+    play(medStat);
+  else
+    play(highStat);  
+}
+
+void workingStatus() {
+  if(eStream1Val == false && eStream2Val == false && eStream3Val == false)
+    play(noStat);
+  else
+    play(workingStat);
 }
 
 void tweetToggle() {
@@ -424,7 +511,7 @@ void emailHandler() {
 void callHandler() {
   if(callTogVal == false) {
     call.pause(true);  
-  } 
+  }
   else {
     play(call);
   }
@@ -434,9 +521,8 @@ void voicemailHandler() {
   if(voicemailTogVal == false) {
     voicemail.pause(true);
   } 
-  else {
+  else
     play(voicemail);
-  }
 }
 
 void eStream1() {
@@ -444,6 +530,9 @@ void eStream1() {
   server.stopEventStream();
   server.loadEventStream(eventDataJSON1);
   println("**** New event stream loaded: " + eventDataJSON1 + " ****");
+  eStream1Val = true;
+  eStream2Val = false;
+  eStream3Val = false;
   
 }
 
@@ -451,10 +540,16 @@ void eStream2() {
   server.stopEventStream();
   server.loadEventStream(eventDataJSON2);
   println("**** New event stream loaded: " + eventDataJSON2 + " ****");  
+  eStream2Val = true;
+  eStream1Val = false;
+  eStream3Val = false;
 }
 
 void eStream3() {
   server.stopEventStream();
   server.loadEventStream(eventDataJSON3);
   println("**** New event stream loaded: " + eventDataJSON3 + " ****");  
+  eStream3Val = true;
+  eStream1Val = false;
+  eStream2Val = false;
 }
