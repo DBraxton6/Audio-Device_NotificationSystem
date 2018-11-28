@@ -15,8 +15,9 @@ Button status;
 Button eventStream1;
 Button eventStream2;
 Button eventStream3;
-//radios for battery status
-//radios network connection
+
+RadioButton batteryStat;
+RadioButton networkStat;
 
 Toggle tweetTog;
 Toggle callTog;
@@ -40,6 +41,11 @@ SamplePlayer text;
 SamplePlayer email;
 SamplePlayer voicemail;
 SamplePlayer call;
+SamplePlayer noStat;
+SamplePlayer workingStat;
+SamplePlayer lowStat;
+SamplePlayer medStat;
+SamplePlayer highStat;
 
 BiquadFilter filter;
 
@@ -202,6 +208,25 @@ void setup() {
      .setPosition(122.5, 232.5)
      .setSize(50, 30)
      .setLabel("Texts");
+
+   batteryStat = p5.addRadioButton("batteryStatus")
+     .setPosition(55, 325)
+     .setSize(20, 20)
+     .setSpacingColumn(30)
+     .setItemsPerRow(4)
+     .addItem("Dying", 1)
+     .addItem("Low", 2)
+     .addItem("Med", 3)
+     .addItem("High", 4);
+     
+   networkStat = p5.addRadioButton("networkStatus")
+     .setPosition(75, 375)
+     .setSize(20, 20)
+     .setSpacingColumn(30)
+     .setItemsPerRow(3)
+     .addItem("Poor", 1)
+     .addItem("Okay", 2)
+     .addItem("Strong", 3);     
      
      ac.out.addInput(gain);
      ac.start();
@@ -211,6 +236,8 @@ void draw() {
   background(256);
   text("Select a contex:", 105, 22.5);
   text("Toggle Notifications:", 90, 135);
+  text("Batter Status:", 110, 317.5);
+  text("Network Status:", 110, 367.5);
   text("Select an event stream:",80, 495);
 
 
