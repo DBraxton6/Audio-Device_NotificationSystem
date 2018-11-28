@@ -60,7 +60,7 @@ void setup() {
   p5 = new ControlP5(this);
   
   //context sounds
-  trainLoop = getSamplePlayer("intermission.wav");
+  trainLoop = getSamplePlayer("train.wav");
   trainLoop.pause(true);
   trainLoop.setToLoopStart();
   trainLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
@@ -70,12 +70,12 @@ void setup() {
   joggingLoop.setToLoopStart();
   joggingLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
-  partyLoop = getSamplePlayer("voice2.wav");
+  partyLoop = getSamplePlayer("party.wav");
   partyLoop.pause(true);
   partyLoop.setToLoopStart();
   partyLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
   
-  lectureLoop = getSamplePlayer("music.wav");
+  lectureLoop = getSamplePlayer("lecture.wav");
   lectureLoop.pause(true);
   lectureLoop.setToLoopStart();
   lectureLoop.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
